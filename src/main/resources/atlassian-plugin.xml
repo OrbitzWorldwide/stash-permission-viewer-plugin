@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<atlassian-plugin key="com.orbitz.stash.plugins.permission-viewer-plugin" name="${project.name}" plugins-version="2">
+<atlassian-plugin key="com.orbitz.bitbucket.plugins.permission-viewer-plugin" name="${project.name}" plugins-version="2">
     <plugin-info>
         <description>${project.description}</description>
         <version>${project.version}</version>
