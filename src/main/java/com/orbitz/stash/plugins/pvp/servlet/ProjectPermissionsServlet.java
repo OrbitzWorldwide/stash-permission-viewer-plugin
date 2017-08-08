@@ -2,14 +2,17 @@ package com.orbitz.stash.plugins.pvp.servlet;
 
 import com.orbitz.stash.plugins.pvp.operations.*;
 
+import com.atlassian.plugin.spring.scanner.annotation.component.Scanned;
+import com.atlassian.plugin.spring.scanner.annotation.imports.ComponentImport;
+
 import com.atlassian.soy.renderer.SoyException;
 import com.atlassian.soy.renderer.SoyTemplateRenderer;
-import com.atlassian.stash.project.Project;
-import com.atlassian.stash.project.ProjectService;
-import com.atlassian.stash.user.PermissionAdminService;
-import com.atlassian.stash.user.Permission;
-import com.atlassian.stash.user.SecurityService;
-import com.atlassian.stash.user.UserService;
+import com.atlassian.bitbucket.project.Project;
+import com.atlassian.bitbucket.project.ProjectService;
+import com.atlassian.bitbucket.permission.PermissionAdminService;
+import com.atlassian.bitbucket.permission.Permission;
+import com.atlassian.bitbucket.user.SecurityService;
+import com.atlassian.bitbucket.user.UserService;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import org.slf4j.Logger;
@@ -23,24 +26,31 @@ import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 
+import javax.inject.Inject;
+
+@Scanned
 public class ProjectPermissionsServlet extends HttpServlet{
     private static final Logger log = LoggerFactory.getLogger(ProjectPermissionsServlet.class);
 
+    @ComponentImport
     private final ProjectService projectService;
-private final SecurityService securityService;
-private final PermissionAdminService permissionAdminService;
-private final UserService userService;
-private final SoyTemplateRenderer soyTemplateRenderer;
+    @ComponentImport
+    private final SecurityService securityService;
+    @ComponentImport
+    private final PermissionAdminService permissionAdminService;
+    @ComponentImport
+    private final UserService userService;
+    @ComponentImport
+    private final SoyTemplateRenderer soyTemplateRenderer;
 
-
-
-
-
-    public ProjectPermissionsServlet(ProjectService projectService,
-                                     SecurityService securityService,
-                                     PermissionAdminService permissionAdminService,
-                                     UserService userService,
-                                     SoyTemplateRenderer soyTemplateRenderer) {
+    @Inject
+    public ProjectPermissionsServlet(
+        ProjectService projectService,
+        SecurityService securityService,
+        PermissionAdminService permissionAdminService,
+        UserService userService,
+        SoyTemplateRenderer soyTemplateRenderer
+    ) {
         this.projectService = projectService;
         this.securityService = securityService;
         this.permissionAdminService = permissionAdminService;
@@ -65,8 +75,9 @@ private final SoyTemplateRenderer soyTemplateRenderer;
         //
         // Build a map using Permission as the key that's value is a list of all the groups and users
         //
-        Map<Permission, List<String>> identityMap = securityService.doWithPermission("Get groups and users to display", Permission.PROJECT_ADMIN, permissionAdminOperation);
-
+        Map<Permission, List<String>> identityMap = securityService
+            .withPermission(Permission.PROJECT_ADMIN, "Get groups and users to display")
+            .call(permissionAdminOperation);
 
         // Create the view model for Soy
         ImmutableMap.Builder<String, Object> immutableMapBuilder =  new ImmutableMap.Builder<String, Object>();

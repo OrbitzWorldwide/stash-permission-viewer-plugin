@@ -19,14 +19,7 @@
         <resource type="download" name="images/" location="/images"/>
         <context>permission-viewer-plugin</context>
     </web-resource>
-    <!-- import from the product container -->
-    <component-import key="projectService" interface="com.atlassian.stash.project.ProjectService" filter=""/>
-    <component-import key="repositoryService" interface="com.atlassian.stash.repository.RepositoryService" filter=""/>
-    <component-import key="securityService" interface="com.atlassian.stash.user.SecurityService" filter=""/>
-    <component-import key="permissionAdminService" interface="com.atlassian.stash.user.PermissionAdminService"
-                      filter=""/>
-    <component-import key="userService" interface="com.atlassian.stash.user.UserService" filter=""/>
-    <component-import key="soyTemplateRenderer" interface="com.atlassian.soy.renderer.SoyTemplateRenderer" filter=""/>
+
     <servlet name="Project Permissions Servlet" i18n-name-key="project-permissions-servlet.name"
              key="project-permissions-servlet" class="com.orbitz.stash.plugins.pvp.servlet.ProjectPermissionsServlet">
         <description key="project-permissions-servlet.description">The Project Permissions Servlet Plugin</description>
@@ -43,19 +36,17 @@
         <label key="project.permissions.plugin.tab">View Permissions</label>
         <link>/plugins/servlet/projectpermissions/${project.key}</link>
         <tooltip key="project.permissions.plugin.tab.description">View Permissions</tooltip>
-        <param name="stashIconClass">aui-icon aui-icon-small aui-iconfont-unlocked</param>
+        <param name="iconClass">aui-icon aui-icon-small aui-iconfont-unlocked</param>
     </web-item>
-    <web-item key="repository-permissions-tab" name="Repository permissions tab" section="stash.repository.nav"
-              weight="100">
+    <web-item key="repository-permissions-tab" name="Repository permissions tab" section="bitbucket.repository.nav" weight="100">
         <label key="repository.permissions.plugin.tab">View Permissions</label>
         <link>/plugins/servlet/repositorypermissions/${repository.id}</link>
         <tooltip key="repository.permissions.plugin.tab.description">View Permissions</tooltip>
-        <param name="stashIconClass">aui-icon aui-icon-small aui-iconfont-unlocked</param>
+        <param name="iconClass">aui-icon aui-icon-small aui-iconfont-unlocked</param>
     </web-item>
 
-    <stash-resource key="soy-templates" name="Soy Templates">
+    <client-resource key="soy-templates" name="Soy Templates">
         <directory location="/templates/"/>
-    </stash-resource>
-
+    </client-resource>
 
 </atlassian-plugin>

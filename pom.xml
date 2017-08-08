@@ -10,7 +10,7 @@
         <url>http://www.orbitz.com/</url>
     </organization>
     <name>Permission Viewer Plugin</name>
-    <description>The Permission Viewer Plugin extends your Atlassian Stash instance to display project and repository permission information to anyone with access to view the project or repository.</description>
+    <description>The Permission Viewer Plugin extends your Atlassian Bitbucket Server instance to display project and repository permission information to anyone with access to view the project or repository.</description>
     <packaging>atlassian-plugin</packaging>
     <licenses>
         <license>
@@ -38,9 +38,9 @@
     <dependencyManagement>
         <dependencies>
             <dependency>
-                <groupId>com.atlassian.stash</groupId>
-                <artifactId>stash-parent</artifactId>
-                <version>${stash.version}</version>
+                <groupId>com.atlassian.bitbucket.server</groupId>
+                <artifactId>bitbucket-parent</artifactId>
+                <version>${bitbucket.version}</version>
                 <type>pom</type>
                 <scope>import</scope>
             </dependency>
@@ -54,23 +54,36 @@
             <scope>provided</scope>
         </dependency>
         <dependency>
-            <groupId>com.atlassian.stash</groupId>
-            <artifactId>stash-api</artifactId>
+            <groupId>com.atlassian.bitbucket.server</groupId>
+            <artifactId>bitbucket-api</artifactId>
             <scope>provided</scope>
         </dependency>
         <dependency>
-            <groupId>com.atlassian.stash</groupId>
-            <artifactId>stash-spi</artifactId>
+            <groupId>com.atlassian.bitbucket.server</groupId>
+            <artifactId>bitbucket-spi</artifactId>
             <scope>provided</scope>
         </dependency>
         <dependency>
-            <groupId>com.atlassian.stash</groupId>
-            <artifactId>stash-page-objects</artifactId>
+            <groupId>com.atlassian.plugin</groupId>
+            <artifactId>atlassian-spring-scanner-annotation</artifactId>
+            <version>${atlassian.spring.scanner.version}</version>
+            <scope>compile</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.atlassian.plugin</groupId>
+            <artifactId>atlassian-spring-scanner-runtime</artifactId>
+            <version>${atlassian.spring.scanner.version}</version>
+            <scope>runtime</scope>
+        </dependency>
+        <dependency>
+            <groupId>javax.inject</groupId>
+            <artifactId>javax.inject</artifactId>
+            <version>1</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>javax.servlet</groupId>
-            <artifactId>servlet-api</artifactId>
+            <artifactId>javax.servlet-api</artifactId>
             <scope>provided</scope>
         </dependency>
         <dependency>
@@ -125,20 +138,64 @@
         <plugins>
             <plugin>
                 <groupId>com.atlassian.maven.plugins</groupId>
-                <artifactId>maven-stash-plugin</artifactId>
+                <artifactId>bitbucket-maven-plugin</artifactId>
                 <version>${amps.version}</version>
                 <extensions>true</extensions>
                 <configuration>
+                    <enableQuickReload>true</enableQuickReload>
+                    <enableFastdev>false</enableFastdev>
                     <products>
                         <product>
-                            <id>stash</id>
-                            <instanceId>stash</instanceId>
-                            <version>${stash.version}</version>
-                            <dataVersion>${stash.data.version}</dataVersion>
-                        </product>
+                            <id>bitbucket</id>
+                            <instanceId>bitbucket</instanceId>
+                            <version>${bitbucket.version}</version>
+                            <dataVersion>${bitbucket.data.version}</dataVersion>
+                        </product>  
                     </products>
+                    <instructions>
+                        <Atlassian-Plugin-Key>${atlassian.plugin.key}</Atlassian-Plugin-Key>
+
+                        <!-- Add package to export here -->
+                        <Export-Package>
+                            com.appnexus.devops.bitbucket,
+                        </Export-Package>
+
+                        <!-- Add package import here -->
+                        <Import-Package>
+                            org.springframework.osgi.*;resolution:="optional",
+                            org.eclipse.gemini.blueprint.*;resolution:="optional",
+                            *
+                        </Import-Package>
+
+                        <!-- Ensure plugin is Spring powered -->
+                        <Spring-Context>*</Spring-Context>
+                    </instructions>
                 </configuration>
             </plugin>
+
+            <plugin>
+                <groupId>com.atlassian.plugin</groupId>
+                <artifactId>atlassian-spring-scanner-maven-plugin</artifactId>
+                <version>${atlassian.spring.scanner.version}</version>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>atlassian-spring-scanner</goal>
+                        </goals>
+                        <phase>process-classes</phase>
+                    </execution>
+                </executions>
+                <configuration>
+                    <scannedDependencies>
+                        <dependency>
+                            <groupId>com.atlassian.plugin</groupId>
+                            <artifactId>atlassian-spring-scanner-external-jar</artifactId>
+                        </dependency>
+                    </scannedDependencies>
+                    <verbose>false</verbose>
+                </configuration>
+            </plugin>
+
             <plugin>
                 <artifactId>maven-compiler-plugin</artifactId>
                 <configuration>
@@ -149,9 +206,12 @@
         </plugins>
     </build>
     <properties>
-        <stash.version>3.8.0</stash.version>
-        <stash.data.version>3.8.0</stash.data.version>
-        <amps.version>5.0.13</amps.version>
-        <plugin.testrunner.version>1.1.2</plugin.testrunner.version>
+        <bitbucket.version>4.11.0</bitbucket.version>
+        <bitbucket.data.version>4.11.0</bitbucket.data.version>
+        <amps.version>6.2.11</amps.version>
+        <plugin.testrunner.version>1.2.3</plugin.testrunner.version>
+        <atlassian.spring.scanner.version>1.2.13</atlassian.spring.scanner.version>
+        <!-- This key is used to keep the consistency between the key in atlassian-plugin.xml and the key to generate bundle. -->
+        <atlassian.plugin.key>${project.groupId}.${project.artifactId}</atlassian.plugin.key>
     </properties>
 </project>
